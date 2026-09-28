@@ -1,0 +1,16 @@
+# Replace every __PLACEHOLDER__ in your own OCI Console; this file is not executable.
+# Compute dynamic group matching rule (one specific instance):
+ALL {instance.id = '__COMPUTE_INSTANCE_OCID__'}
+
+# Policies for that dynamic group, scoped to the GenAI compartment:
+Allow dynamic-group __DOMAIN__/__COMPUTE_DG_NAME__ to use generative-ai-chat in compartment id __GENAI_COMPARTMENT_OCID__
+Allow dynamic-group __DOMAIN__/__COMPUTE_DG_NAME__ to use generative-ai-text-embedding in compartment id __GENAI_COMPARTMENT_OCID__
+
+# Separate ADB resource-principal dynamic group matching rule:
+ALL {resource.type = 'autonomousdatabase', resource.id = '__ADB_OCID__'}
+
+# Only chat permission is needed for the Select AI profile in this demo:
+Allow dynamic-group __DOMAIN__/__ADB_DG_NAME__ to use generative-ai-chat in compartment id __GENAI_COMPARTMENT_OCID__
+
+# Verify identity-domain syntax and model restrictions for your tenancy.
+# Do not add manage all-resources or broad tenancy-wide grants to bypass errors.
