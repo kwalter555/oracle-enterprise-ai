@@ -1,0 +1,11 @@
+{
+  "purpose": "Documentation template; not an Open WebUI import/export format",
+  "name": "Oracle ADB demo",
+  "id": "oracle_adb_demo",
+  "transport": "MCP Streamable HTTP",
+  "url": "https://dataaccess.adb.__ADB_REGION__.oraclecloudapps.com/adb/mcp/v1/databases/__ADB_OCID__",
+  "authentication": "OAuth 2.1 - register and authorize in your own deployment",
+  "database_user": "WEBUI_MCP",
+  "function_name_filter": ["WEBUI_HEALTH_CHECK", "WEBUI_PROJECT_LOOKUP", "WEBUI_SQL_PROPOSE"],
+  "secrets": "No token, client secret, password or wallet belongs in this template"
+}
