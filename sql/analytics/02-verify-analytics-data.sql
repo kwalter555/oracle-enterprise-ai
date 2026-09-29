@@ -61,26 +61,26 @@ BEGIN
   SELECT COUNT(*) INTO l_value FROM demo_a_leave_days
   WHERE leave_status='ISKORISTEN' AND leave_date > DATE '2026-09-24';
   expect('future taken leave',l_value,0);
-  DBMS_OUTPUT.PUT_LINE('USPJEH: sve provjere analitickog demo skupa prosle.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: all analytics demo dataset checks passed.');
 END;
 /
 
 -- Reference query: costs by calendar year (not project start year).
-SELECT EXTRACT(YEAR FROM cost_date) AS godina, SUM(amount_eur) AS trosak_eur
-FROM demo_a_costs GROUP BY EXTRACT(YEAR FROM cost_date) ORDER BY godina;
+SELECT EXTRACT(YEAR FROM cost_date) AS calendar_year, SUM(amount_eur) AS cost_eur
+FROM demo_a_costs GROUP BY EXTRACT(YEAR FROM cost_date) ORDER BY calendar_year;
 
 -- Reference query: preaggregate cost rows before joining to project budgets.
 SELECT p.project_code, p.budget_eur, c.spent_eur,
-       c.spent_eur-p.budget_eur AS prekoracenje_eur
+       c.spent_eur-p.budget_eur AS overspend_eur
 FROM demo_a_projects p
 JOIN (SELECT project_id,SUM(amount_eur) AS spent_eur
       FROM demo_a_costs GROUP BY project_id) c ON c.project_id=p.project_id
 WHERE c.spent_eur>p.budget_eur ORDER BY p.project_code;
 
 -- Reference query: includes employees with zero taken annual-leave days in 2025.
-SELECT d.department_name, COUNT(DISTINCT e.employee_id) AS svi_zaposlenici,
-       COUNT(DISTINCT l.employee_id) AS zaposlenici_s_godisnjim,
-       NVL(SUM(l.day_fraction),0) AS iskoristeni_dani
+SELECT d.department_name, COUNT(DISTINCT e.employee_id) AS all_employees,
+       COUNT(DISTINCT l.employee_id) AS employees_with_annual_leave,
+       NVL(SUM(l.day_fraction),0) AS days_taken
 FROM demo_a_employees e
 JOIN demo_a_departments d ON d.department_id=e.department_id
 LEFT JOIN demo_a_leave_days l ON l.employee_id=e.employee_id

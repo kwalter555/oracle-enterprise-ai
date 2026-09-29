@@ -1,97 +1,99 @@
-# Postavljanje vlastitog demo okruženja
+# Setting up your own demo environment
 
-## 1. Što trebate sami osigurati
+## 1. What you need to provide
 
-Vlastiti OCI tenancy/compartment, GenAI pristup i kvote, Linux Compute VM s
-Dockerom/Composeom v2 te izlazni HTTPS pristup potrebnim servisima. Gateway se
-autenticira Instance Principalom same instance: ne kopirajte tuđe API ključeve.
-Metadata servis instance mora biti dostupan gateway kontejneru. Ne izlažite ga
-nepouzdanim aplikacijama niti dajte instanci široke IAM ovlasti.
+Your own OCI tenancy/compartment, GenAI access and quotas, a Linux Compute VM with
+Docker/Compose v2, and outbound HTTPS access to the required services. The gateway
+authenticates using that VM's Instance Principal; do not copy anyone else's API
+keys. The instance metadata service must be reachable from the gateway container.
+Do not expose it to untrusted applications or grant the instance broad IAM permissions.
 
-Koristite zasebnu novu mapu i VM ili barem zaseban Compose projekt. Ovaj predložak
-nije migracija postojeće aplikacije. Nema automatiziranog rollbacka/restorea.
+Use a separate new directory and VM, or at least a separate Compose project. This
+template is not an application migration. There is no automated rollback/restore.
 
-Napravite Compute dynamic group za točan instance OCID i dvije compartment-scoped
-politike iz `config/iam-policy.example.txt`. Provjerite identity domain, dostupnost
-modela i propagaciju pravila. ADB dynamic group je druga grupa i treba se samo
-ako koristite Select AI. Ne zamjenjujte ih jednom širokom grupom.
+Create a Compute dynamic group matching the exact instance OCID and the two
+compartment-scoped policies in `config/iam-policy.example.txt`. Check the identity
+domain, model availability, and policy propagation. The ADB dynamic group is a
+separate group, needed only for Select AI. Do not combine them into one broad group.
 
-Predložak koristi Frankfurt kao javni primjer regije. Modeli/ograničenja nisu
-prenosivi u sve regije. Provjerite aktualni OCI katalog i uvjete vanjske obrade.
+The template uses Frankfurt as a public example region. Models and limits are
+not available in every region. Check the current OCI catalog and external-processing terms.
 
-## 2. Tajne i konfiguracija
+## 2. Secrets and configuration
 
-Iz korijena repozitorija `python3 scripts/init_env.py` stvara `.env`, tri različite
-nasumične tajne i ne ispisuje ih. Datoteka se kreira isključivo ako ne postoji,
-s dozvolama 0600. Skripta ne stvara OCI ni Oracle vjerodajnice.
+From the repository root, `python3 scripts/init_env.py` creates `.env` with three
+distinct random secrets without printing them. It creates the file only if it
+does not exist, with permissions 0600. It does not create OCI or Oracle credentials.
 
-Uredite lokalno:
+Edit locally:
 
-- `OCI_REGION`: regija u kojoj koristite GenAI.
-- `OCI_COMPARTMENT_ID`: vaš compartment za GenAI; nije OCID baze ili VM-a.
-- `WEBUI_URL`: adresa koju će koristiti preglednik. Lokalno tuneliranje može
-  koristiti `http://localhost:3000`; za vanjski pristup postavite stvarni HTTPS
-  origin i siguran reverse proxy. HTTPS proxy nije uključen u ovaj paket.
-- Ostavite tri generirane tajne međusobno različite. PostgreSQL tajna koristi
-  hex kako bi bila sigurna unutar DATABASE_URL bez dodatnog URL-encodinga.
+- `OCI_REGION`: the region where you use GenAI.
+- `OCI_COMPARTMENT_ID`: your GenAI compartment, not a database or VM OCID.
+- `WEBUI_URL`: the address your browser will use. Local tunneling can use
+  `http://localhost:3000`; for remote access, set the actual HTTPS origin and a
+  secure reverse proxy. An HTTPS proxy is not included in this package.
+- Keep the three generated secrets distinct. The PostgreSQL secret uses hex so
+  it is safe inside `DATABASE_URL` without additional URL encoding.
 
-`python3 scripts/check_config.py` provjerava format, ne valjanost OCI pristupa.
-Ne šaljite `.env`, `docker inspect` ni puni `docker compose config` u chat/Git;
-razriješena konfiguracija može sadržavati tajne. Koristite `config --quiet`.
+`python3 scripts/check_config.py` validates format, not OCI access. Do not send
+`.env`, `docker inspect` output, or full `docker compose config` output to chat or
+Git: resolved configuration may contain secrets. Use `config --quiet`.
 
-## 3. Pokretanje i prvo povezivanje
+## 3. Startup and first connection
 
-Pokrenite naredbe iz README-a. Image tagovi su namjerno fiksni kao u demonstraciji,
-ali nisu digest-pinned. Base Python image i tranzitivne Python ovisnosti nisu
-potpuno zaključani. Ovo nije bit-for-bit reproduktivan ili sigurnosno auditiran
-build. Prije produkcije provjerite ranjivosti, zaključajte digeste/ovisnosti i
-ponovite kompatibilnost; adapter sadrži verzijski osjetljive LiteLLM prilagodbe.
+Run the commands in the README. Image tags intentionally match the demo, but are
+not pinned by digest. The base Python image and transitive Python dependencies
+are not fully locked. This is not a bit-for-bit reproducible or security-audited
+build. Before production, assess vulnerabilities, pin digests/dependencies, and
+repeat compatibility checks; the adapter contains version-sensitive LiteLLM adaptations.
 
-Portovi PostgreSQL-a i gatewaya nisu objavljeni. WebUI je vezan samo na loopback.
-Sa svog računala uspostavite tunel, koristeći svoj ključ i adresu:
+PostgreSQL and gateway ports are not published. WebUI binds to loopback only.
+From your computer, create a tunnel using your own key and host address:
 
 ```bash
 ssh -i /path/to/your-ssh-key -L 3000:127.0.0.1:3000 ubuntu@YOUR_VM_HOST
 ```
 
-Otvorite `http://localhost:3000` i kreirajte prvi administratorski račun, s vlastitom
-jakom lozinkom. Dok se prvi admin ne napravi, ne dijelite tunel/proxy niti pristup
-drugim korisnicima. Nakon toga u Admin postavkama isključite registraciju novih
-korisnika i lokalno postavite `ENABLE_SIGNUP=false`; primijenite Compose promjenu
-u dogovorenom trenutku. Provjerite da UI više ne nudi registraciju.
+Open `http://localhost:3000` and create the first administrator account with your
+own strong password. Until that account exists, do not share the tunnel/proxy or
+allow other users access. Then disable new user registration in Admin settings
+and set `ENABLE_SIGNUP=false` locally; apply the Compose change at an agreed time.
+Verify that the UI no longer offers sign-up.
 
-Open WebUI neke postavke sprema u bazu i one mogu nadjačati nove env vrijednosti.
-Zato provjerite i Admin UI, ne samo `.env`. Ne brišite volume kako biste promijenili
-postavku. `WEBUI_SECRET_KEY` sačuvajte privatno: važan je i za spremljene OAuth tajne.
+Open WebUI persists some settings in its database, which can override new
+environment values. Check the Admin UI as well as `.env`. Do not delete a volume
+to change a setting. Preserve `WEBUI_SECRET_KEY` privately: it also matters for
+stored OAuth secrets.
 
-U Admin Connections provjerite OpenAI-compatible URL `http://oci-gateway:4000/v1`
-i vlastiti gateway ključ (iz lokalne `.env`). Ne koristite OpenAI API ključ umjesto
-ovog lokalnog ključa. Izaberite jedan dopušteni model i pošaljite izmišljeni test.
-Poziv troši vaš OCI račun. `/health` potvrđuje početnu autentikaciju adaptera,
-ne ispravnost modela ni svih IAM prava.
+In Admin Connections, check the OpenAI-compatible URL `http://oci-gateway:4000/v1`
+and your gateway key from the local `.env`. Do not substitute an OpenAI API key
+for this local key. Choose an allowed model and send a synthetic test prompt.
+The call is billed to your OCI account. `/health` confirms initial adapter
+authentication, not model availability or all IAM permissions.
 
-## 4. Native alati, embeddings i RAG
+## 4. Native tools, embeddings, and RAG
 
-Native tool calling provjerite zasebno za odabrani model. Gateway ima ograničenje
-32 definicije alata po zahtjevu; jedna MCP integracija može izložiti više alata.
-Ograničite filter na stvarno potrebne alate i isključite nepotrebne built-in alate.
+Test native tool calling separately for each selected model. The gateway accepts
+at most 32 tool definitions per request; one MCP integration may expose several
+tools. Filter to the tools you actually need and disable unnecessary built-in tools.
 
-Embedding API `/v1/embeddings` dostupan je za `cohere.embed-v4.0`, s tipovima
-`search_document` i `search_query`. Ovaj Compose ne konfigurira kompletan RAG tok,
-Object Storage, Knowledge Base ili vector-store postavke iz izvornog okruženja.
-Open WebUI može inicijalizirati svoje zadane embedding modele; ne učitavajte
-stvarne dokumente prije provjere vlastitih RAG postavki i podatkovnog toka.
+The `/v1/embeddings` API supports `cohere.embed-v4.0`, with `search_document` and
+`search_query` input types. This Compose template does not configure the original
+environment's complete RAG flow, Object Storage, Knowledge Base, or vector store.
+Open WebUI may initialize its default embedding models; do not upload real
+documents until you have verified your own RAG settings and data flow.
 
-Ne tvrdimo da je originalna Object Storage konfiguracija rekonstruirana. Za nju
-su potrebni zasebni predlošci i testovi; nikakvi originalni bucket podaci nisu ovdje.
+The original Object Storage configuration has not been reconstructed. It requires
+separate templates and tests; none of the original bucket data is included here.
 
-## 5. Baza i MCP
+## 5. Database and MCP
 
-Slijedite [DATABASE-MCP](DATABASE-MCP.md). Wallet je potreban samo za odabrani
-SQL Developer način spajanja; gateway ga ne koristi. MCP OAuth registracija radi
-se iznova u novom WebUI okruženju. Postojeći klijent/token ne prenosi se s izvorne aplikacije.
+Follow [DATABASE-MCP](DATABASE-MCP.md). A wallet is required only for the selected
+SQL Developer connection method; the gateway does not use one. Register MCP OAuth
+again in the new WebUI environment. Do not transfer the original application's
+client credentials or tokens.
 
-## Izvori
+## References
 
 - [Open WebUI environment reference](https://docs.openwebui.com/reference/env-configuration/)
 - [Open WebUI MCP](https://docs.openwebui.com/features/extensibility/mcp/)

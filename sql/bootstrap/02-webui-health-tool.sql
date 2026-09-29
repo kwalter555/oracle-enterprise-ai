@@ -12,7 +12,7 @@ BEGIN
   EXECUTE IMMEDIATE q'~
 CREATE FUNCTION WEBUI_HEALTH_CHECK RETURN CLOB AUTHID CURRENT_USER AS
 BEGIN
-  RETURN '{"status":"OK","message":"Pozdrav iz autonomne baze!"}';
+  RETURN '{"status":"OK","message":"Hello from Autonomous Database!"}';
 END;
 ~';
   SELECT COUNT(*) INTO n FROM user_objects

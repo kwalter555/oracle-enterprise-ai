@@ -78,10 +78,10 @@ def validate_native_call(payload):
     return {"role": "assistant", "content": message.get("content"), "tool_calls": calls}
 
 PROMPT = [
-    {"role": "system", "content": "Odgovaraj kratko. Testni dokument: kontrolna oznaka projekta je OK-742."},
-    {"role": "user", "content": "Koja je kontrolna oznaka projekta?"},
+    {"role": "system", "content": "Answer briefly. Test document: the project verification marker is OK-742."},
+    {"role": "user", "content": "What is the project verification marker?"},
     {"role": "assistant", "content": "OK-742"},
-    {"role": "user", "content": "Ponovi samo kontrolnu oznaku iz testnog dokumenta."},
+    {"role": "user", "content": "Repeat only the verification marker from the test document."},
 ]
 
 

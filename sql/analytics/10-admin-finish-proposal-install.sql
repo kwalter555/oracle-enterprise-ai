@@ -21,7 +21,7 @@ BEGIN
   IF n <> 0 THEN RAISE_APPLICATION_ERROR(-20322,'Unexpected remaining reader system privileges. Stop.'); END IF;
   SELECT COUNT(*) INTO n FROM dba_role_privs WHERE grantee='DEMO_AI_READER';
   IF n <> 0 THEN RAISE_APPLICATION_ERROR(-20323,'Unexpected reader roles. Stop.'); END IF;
-  DBMS_OUTPUT.PUT_LINE('USPJEH: temporary CREATE PROCEDURE removed; reader system privileges limited to CREATE SESSION.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: temporary CREATE PROCEDURE removed; reader system privileges limited to CREATE SESSION.');
 END;
 /
 SELECT privilege FROM dba_sys_privs WHERE grantee='DEMO_AI_READER' ORDER BY privilege;

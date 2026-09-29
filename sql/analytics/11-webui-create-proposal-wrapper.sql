@@ -30,7 +30,7 @@ END;
   IF l_status IS NULL OR l_status <> 'INVALID_ARGUMENT' THEN
     RAISE_APPLICATION_ERROR(-20333,'Cross-schema rejection test failed.');
   END IF;
-  DBMS_OUTPUT.PUT_LINE('USPJEH: wrapper VALID; cross-schema invalid-input test passed, no model call.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: wrapper VALID; cross-schema invalid-input test passed, no model call.');
 END;
 /
 SELECT line, position, text FROM user_errors

@@ -14,14 +14,14 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20230,'Run as DEMO_AI_READER.');
   END IF;
   l_sql := DBMS_CLOUD_AI.GENERATE(
-    prompt => 'Koliko je projekata zapocelo u kalendarskoj 2025. godini? Koristi samo WEBUI_MCP.DEMO_A_PROJECTS i stupac START_DATE. Prebroji projekte s datumom pocetka od 2025-01-01 ukljucivo do 2026-01-01 iskljucivo. Vrati jedan stupac BROJ_PROJEKATA.',
+    prompt => 'How many projects started in calendar year 2025? Use only WEBUI_MCP.DEMO_A_PROJECTS and the START_DATE column. Count projects starting on or after 2025-01-01 and before 2026-01-01. Return one column named PROJECT_COUNT.',
     profile_name => 'DEMO_ANALYTICS_OCI',
     action => 'showsql'
   );
   IF l_sql IS NULL THEN
     RAISE_APPLICATION_ERROR(-20231,'Empty SHOWSQL response.');
   END IF;
-  DBMS_OUTPUT.PUT_LINE('GENERIRANI SQL - NIJE IZVRSEN:');
+  DBMS_OUTPUT.PUT_LINE('GENERATED SQL - NOT EXECUTED:');
   WHILE l_offset <= DBMS_LOB.GETLENGTH(l_sql) LOOP
     l_piece := DBMS_LOB.SUBSTR(l_sql,4000,l_offset);
     DBMS_OUTPUT.PUT_LINE(l_piece);
@@ -31,7 +31,7 @@ END;
 /
 
 -- Independent, hand-written reference query. This does not execute model output.
--- Expected BROJ_PROJEKATA = 18.
-SELECT COUNT(*) AS broj_projekata
+-- Expected PROJECT_COUNT = 18.
+SELECT COUNT(*) AS project_count
 FROM WEBUI_MCP.DEMO_A_PROJECTS
 WHERE start_date >= DATE '2025-01-01' AND start_date < DATE '2026-01-01';

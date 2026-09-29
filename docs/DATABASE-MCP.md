@@ -1,119 +1,149 @@
-# Vlastita Autonomous baza i MCP demo
+# Your own Autonomous Database and MCP demo
 
-Koristite NOVU testnu Autonomous bazu s podrškom za DBMS_CLOUD_AI i
-DBMS_CLOUD_AI_AGENT. Obični PostgreSQL iz Composea pohranjuje WebUI podatke;
-nije zamjena za Oracle Autonomous bazu. OCI/IAM postavlja administrator vašeg
-računa; sva imena shema ovdje su generička demo imena.
+Use a NEW test Autonomous Database with DBMS_CLOUD_AI and DBMS_CLOUD_AI_AGENT
+support. PostgreSQL in Compose stores WebUI data; it does not replace Oracle
+Autonomous Database. Your account administrator configures OCI/IAM. Schema names
+in this guide are generic demo names.
 
-## A. Vlastite veze i početne ovlasti
+## A. Your own connections and initial privileges
 
-1. U OCI konzoli preuzmite wallet SVOJE baze ako koristite SQL Developer Cloud
-   Wallet vezu. Čuvajte ga izvan repozitorija. Koristite lozinku Oracle korisnika,
-   ne lozinku walleta. Spojite se kao ADMIN, Role default.
-2. Provjerite `SELECT USER FROM dual`. Kreirajte WEBUI_MCP kroz Other Users →
-   Create User, Password authentication, DATA, unlocked/not expired, bez širokih
-   rola. Lozinku unesite u dijalog, nikad u SQL datoteku ili Git.
-3. Kao ADMIN pokrenite `sql/bootstrap/00-admin-owner-grants.sql`, zatim
-   `sql/projects/00-admin-permissions.sql`. Dobiva samo potrebne početne ovlasti
-   za vlasnika demo tablica/alata i ograničenu kvotu. Ne dodjeljujte DBA/DWROLE.
-4. Kreirajte zasebnu SQL Developer vezu kao WEBUI_MCP.
+1. Download the wallet for YOUR database from OCI Console if using a SQL Developer
+   Cloud Wallet connection. Keep it outside the repository. Use the Oracle user's
+   password, not the wallet password. Connect as ADMIN, with Role set to default.
+2. Check `SELECT USER FROM dual`. Create WEBUI_MCP through Other Users →
+   Create User, with password authentication, DATA tablespace, unlocked/not expired,
+   and no broad roles. Enter the password in the dialog, never in a SQL file or Git.
+3. As ADMIN, run `sql/bootstrap/00-admin-owner-grants.sql`, then
+   `sql/projects/00-admin-permissions.sql`. These grant the initial privileges
+   needed by the demo table/tool owner and a limited quota. Do not grant DBA/DWROLE.
+4. Create a separate SQL Developer connection as WEBUI_MCP.
 
-Sve skripte pokrenite cijele s F5 u novom worksheetu odgovarajuće veze.
-DDL/grantovi mogu implicitno potvrditi promjene. Na pogrešci stanite i pregledajte
-točan izlaz; nemojte automatski brisati ili prepisivati postojeće objekte.
+Run each entire script with F5 in a new worksheet on the correct connection.
+DDL and grants may implicitly commit changes. On error, stop and inspect the
+exact output; do not automatically delete or overwrite existing objects.
 
-## B. Demo podaci i postojeći tipovi alata
+## B. Demo data and existing tool types
 
-Kao WEBUI_MCP:
+As WEBUI_MCP:
 
-- `sql/bootstrap/02-webui-health-tool.sql`: fiksni testni pozdrav i MCP alat.
-- `sql/projects/01-create-and-load.sql` pa `02-verify.sql`: 12 izmišljenih projekata.
-- `sql/projects/03-create-lookup.sql`, `04-test-and-register-lookup.sql`,
-  `05-verify-lookup-tool.sql`: ograničeni lookup samo po šifri projekta.
-- `sql/analytics/01-create-analytics-data.sql` pa `02-verify-analytics-data.sql`:
-  pet odvojenih DEMO_A tablica; originalna DEMO_PROJECTS se ne mijenja.
+- `sql/bootstrap/02-webui-health-tool.sql`: a fixed test greeting and MCP tool.
+- `sql/projects/01-create-and-load.sql`, then `02-verify.sql`: 12 fictional projects.
+- `sql/projects/03-create-lookup.sql`, `04-test-and-register-lookup.sql`, and
+  `05-verify-lookup-tool.sql`: a restricted lookup by project code only.
+- `sql/analytics/01-create-analytics-data.sql`, then `02-verify-analytics-data.sql`:
+  five separate DEMO_A tables; the original DEMO_PROJECTS table is unchanged.
 
-Ne pokrećite SQL iz `oci-gateway/adb-readonly-demo/`: to su povijesni testni fixturei.
+Do not run SQL from `oci-gateway/adb-readonly-demo/`: those are historical test fixtures.
 
-Referentni analitički skup: 36 projekata, 24 zaposlenika, 4 odjela, 192 troškovna
-zapisa, 354 zapisa odsutnosti. Svi podaci su izmišljeni; datum presjeka je
-2026-09-24, pa 2026. nije puna godina. Za usporedivost uvijek pitajte eksplicitnu godinu.
-Ukupni evidentirani trošak: 473699 EUR. Godišnji 2025.: 20 različitih zaposlenika,
-100 dana. Ovo nisu podaci primateljeve tvrtke.
+The reference analytics dataset has 36 projects, 24 employees, 4 departments,
+192 cost entries, and 354 absence-day records. All data is fictional. The snapshot
+date is 2026-09-24, so 2026 is not a full year. Always ask about an explicit year
+for reproducible comparisons. Total recorded costs: EUR 473699. Annual leave in
+2025: 20 distinct employees, 100 days. These are not your company's records.
 
-## C. Select AI kao zasebni čitač
+### Data code glossary
 
-1. Kao ADMIN pokrenite `sql/analytics/03-select-ai-preflight-admin.sql`.
-2. U svom OCI računu postavite zasebnu ADB dynamic group i `generative-ai-chat`
-   politiku iz `config/iam-policy.example.txt`. Koristite točan OCID vlastite baze
-   i svoj GenAI compartment. Pričekajte propagaciju; ne proširujte ovlasti naslijepo.
-3. Kao ADMIN pokrenite `sql/bootstrap/01-admin-resource-principal.sql`.
-4. Kao ADMIN kroz Create User napravite DEMO_AI_READER, novom vlastitom lozinkom,
-   bez rola, quota ili dodatnih sistemskih ovlasti. Zatim pokrenite analitičku 04.
-5. Napravite vezu DEMO_AI_READER. Provjerite `SELECT USER FROM dual`.
-6. Kopirajte `sql/analytics/05-reader-create-profile.sql` u zanemarenu lokalnu
-   mapu `local/` (napravite je sami) i u toj kopiji zamijenite **sve** pojave
-   `__OCI_COMPARTMENT_OCID__` vlastitim GenAI compartment OCID-em. Regiju/model
-   uskladite sa svojim računom. Nemojte commitati personaliziranu kopiju.
-   Izvorni predložak namjerno odbija izvršavanje prije zamjene.
-7. Kao DEMO_AI_READER pokrenite lokalnu 05, zatim izvornu 06 (jedan naplativi
-   model poziv) i 07 (dva naplativa poziva). SHOWSQL vraća prijedlog, ne izvršava ga.
-   Kontrolni rezultati nisu dokaz da je generirani SQL izvršen.
+Stored codes are retained for compatibility with existing demo installations,
+constraints, and tests. Descriptive names and sample questions are in English.
+Translate the meaning in answers, but use the exact stored code in SQL predicates.
 
-## D. MCP alat za prijedlog SQL-a, bez izvršavanja
-
-Ovo nije proizvoljni SQL executor i nema parametar approved. Nakon ljudskog pregleda
-točan SQL izvršava se RUČNO u SQL Developeru kao DEMO_AI_READER, nikada kao ADMIN.
-Odgovor "odobreno" u chatu ništa ne izvršava. Svaki novi prijedlog treba novi pregled.
-
-Redoslijed u `sql/analytics/`:
-
-| Skripta | Veza | Napomena |
+| Field | Stored code | English meaning |
 |---|---|---|
-| 08 | ADMIN | Privremeni CREATE PROCEDURE za čitača. |
-| 09 | DEMO_AI_READER | Nova funkcija, šest lokalnih negativnih testova, EXECUTE za WEBUI_MCP. |
-| 10 | ADMIN | Uklanja privremenu ovlast; pokrenuti i ako 09 ne uspije pa stati na grešci. |
-| 11 | WEBUI_MCP | Lokalni wrapper i provjera odbijanja neispravnog ulaza. |
-| 12 | WEBUI_MCP | Jedan naplativi poziv, očekuje PROPOSAL_ONLY i executed=false. |
-| 13 | WEBUI_MCP | Tek nakon uspješnog testa 12 i pregleda — registrira novi alat. |
+| Project status | `PLANIRAN` | Planned (12-project demo only) |
+| Project status | `U_TIJEKU` | In progress |
+| Project status | `PAUZIRAN` | Paused |
+| Project status | `ZAVRSEN` | Completed |
+| Cost category | `RAD` | Labor |
+| Cost category | `CLOUD` | Cloud |
+| Cost category | `LICENCE` | Licenses |
+| Cost category | `VANJSKE_USLUGE` | External services |
+| Leave type | `GODISNJI` | Annual leave |
+| Leave type | `EDUKACIJA` | Training |
+| Leave status | `ISKORISTEN` | Actually taken |
+| Leave status | `ODOBREN` | Approved, not yet taken |
+| Leave status | `OTKAZAN` | Cancelled |
 
-Prijedlog nije SQL-sigurnosno validiran. Ne izvršavajte neočekivane funkcije/pakete,
-DB linkove, PL/SQL ili dodatne naredbe samo zato što tekst počinje sa SELECT.
-Novi wrapper koristi fiksni SHOWSQL prefiks, fiksni profil i popis pet tablica;
-ne nudi korisniku promjenu akcije. Ograničava pitanje na 2000 znakova i odgovor
-na 16000 znakova. Nema dnevnog budžeta/rate limita za model; ograničite pristup.
+The English source files do not migrate existing rows or functions. Do not rerun
+creation scripts to translate a running database: they deliberately stop if their
+objects already exist. Proper names, identifiers, and the Europe/Zagreb time zone
+remain unchanged.
 
-## E. MCP i Open WebUI
+## C. Select AI with a separate reader account
 
-U OCI konzoli za VLASTITU bazu omogućite MCP prema Oracle dokumentaciji:
-free-form tag `adb$feature` s vrijednošću `{"name":"mcp_server","enable":true}`.
-Ako već postoje feature tagovi ili privatni endpoint, slijedite njihove posebne
-upute, ne prepisujte nepovezane postavke. Ne otvarajte mrežni pristup svima radi testa.
+1. As ADMIN, run `sql/analytics/03-select-ai-preflight-admin.sql`.
+2. In your OCI account, configure a separate ADB dynamic group and the
+   `generative-ai-chat` policy from `config/iam-policy.example.txt`. Use your
+   database's exact OCID and your GenAI compartment. Allow time for propagation;
+   do not broaden privileges blindly.
+3. As ADMIN, run `sql/bootstrap/01-admin-resource-principal.sql`.
+4. As ADMIN, create DEMO_AI_READER through Create User with a new password of your
+   own, no roles, no quotas, and no additional system privileges. Then run analytics 04.
+5. Create a DEMO_AI_READER connection. Check `SELECT USER FROM dual`.
+6. Copy `sql/analytics/05-reader-create-profile.sql` to the Git-ignored `local/`
+   directory (create it yourself). In that copy, replace **every** occurrence of
+   `__OCI_COMPARTMENT_OCID__` with your GenAI compartment OCID. Adjust the region
+   and model for your account. Do not commit the personalized copy. The original
+   template intentionally refuses to run before substitution.
+7. As DEMO_AI_READER, run your local 05, then the original 06 (one billable model
+   call) and 07 (two billable calls). SHOWSQL returns a proposal without executing
+   it. Reference results do not prove that generated SQL was executed.
 
-U Open WebUI Admin → Integrations dodajte novu MCP Streamable HTTP vezu.
-`config/mcp-connection.example.json` prikazuje vrijednosti, ali nije import format.
-U URL umetnite svoju ADB regiju i OCID. Za private endpoint koristite format iz
-OCI dokumentacije. Postavite OAuth 2.1, Register Client, spremite, ponovno otvorite
-i Authorize OAuth svojim WEBUI_MCP korisnikom. Ako vaš ORDS login koristi alias,
-provjerite ga u vlastitoj Database Actions konfiguraciji; ne kopirajte tuđi alias.
+## D. MCP SQL proposal tool — no execution
 
-Filter alata ograničite na:
+This is not an arbitrary SQL executor and has no approval parameter. After human
+review, run the exact SQL MANUALLY in SQL Developer as DEMO_AI_READER, never ADMIN.
+Replying "approved" in chat executes nothing. Every new proposal requires a new review.
+
+Run the files in `sql/analytics/` in this order:
+
+| Script | Connection | Purpose |
+|---|---|---|
+| 08 | ADMIN | Temporarily grants CREATE PROCEDURE to the reader. |
+| 09 | DEMO_AI_READER | Creates a function, runs six local rejection tests, grants EXECUTE to WEBUI_MCP. |
+| 10 | ADMIN | Removes the temporary privilege; run even if 09 fails, then stop to investigate. |
+| 11 | WEBUI_MCP | Creates a local wrapper and tests rejection of invalid input. |
+| 12 | WEBUI_MCP | Makes one billable call; expects PROPOSAL_ONLY and executed=false. |
+| 13 | WEBUI_MCP | Registers the new tool only after test 12 passes and its output is reviewed. |
+
+Proposed SQL has not been security-validated. Do not execute unexpected functions,
+packages, database links, PL/SQL, or extra statements just because the text starts
+with SELECT. The wrapper uses a fixed SHOWSQL prefix, fixed profile, and five-table
+allowlist; users cannot change the action. Questions are limited to 2000 characters
+and responses to 16000 characters. There is no daily model budget or rate limit;
+restrict access.
+
+## E. MCP and Open WebUI
+
+Enable MCP for YOUR database in OCI Console following Oracle's documentation:
+free-form tag `adb$feature` with value `{"name":"mcp_server","enable":true}`.
+If feature tags or a private endpoint already exist, follow their specific
+instructions; do not overwrite unrelated settings. Do not open network access to
+everyone just to test.
+
+In Open WebUI Admin → Integrations, add a new MCP Streamable HTTP connection.
+`config/mcp-connection.example.json` documents values but is not an import format.
+Insert your ADB region and OCID in the URL. For a private endpoint, use the format
+in OCI documentation. Set OAuth 2.1, Register Client, save, reopen, and Authorize
+OAuth with your WEBUI_MCP account. If your ORDS login uses an alias, check your own
+Database Actions configuration; do not copy someone else's alias.
+
+Limit the tool filter to:
 `WEBUI_HEALTH_CHECK,WEBUI_PROJECT_LOOKUP,WEBUI_SQL_PROPOSE`.
-Ograničite Access Control na demo administratora. Koristite Native function calling
-i novi razgovor. Za OAuth WEBUI_URL/callback mora biti ispravan za vaš browser;
-localhost/SSH protok nije jamstvo da ga svaki OAuth deployment prihvaća.
+Restrict Access Control to the demo administrator. Use Native function calling
+and a new conversation. OAuth WEBUI_URL/callback must be correct for your browser;
+a localhost/SSH flow is not guaranteed to work with every OAuth deployment.
 
-Prvi upit je health check bez argumenata. Zatim:
+Start with a health check without arguments. Then ask:
 
-> Pozovi WEBUI_SQL_PROPOSE: koliko je različitih zaposlenika tijekom 2025. stvarno
-> koristilo godišnji odmor i koliko ukupno dana? Prikaži neizvršeni SQL, bez brojki.
+> Call WEBUI_SQL_PROPOSE: how many distinct employees actually took annual leave
+> during 2025, and how many days in total? Show the unexecuted SQL, without numeric results.
 
-Otvorite stvarni tool output. Mora sadržavati `PROPOSAL_ONLY`, `executed:false` i
-`sql_validation:NOT_VALIDATED`. Tek ručno izvršavanje daje rezultate iz baze.
+Open the actual tool output. It must contain `PROPOSAL_ONLY`, `executed:false`,
+and `sql_validation:NOT_VALIDATED`. Only manual execution returns database results.
 
-## Izvori
+## References
 
-- [Oracle MCP setup i endpointi](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/use-mcp-server.html)
+- [Oracle MCP setup and endpoints](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/use-mcp-server.html)
 - [Oracle Resource Principal](https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/resource-principal.html)
 - [Select AI API](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/dbms-cloud-ai-package.html)
 - [Open WebUI MCP/OAuth](https://docs.openwebui.com/features/extensibility/mcp/)

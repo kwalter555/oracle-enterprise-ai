@@ -28,6 +28,6 @@ BEGIN
     }~',
     description => 'Proposal only; manual review and manual SQL Developer execution. No automatic approval/execution path.'
   );
-  DBMS_OUTPUT.PUT_LINE('USPJEH: WEBUI_SQL_PROPOSE registered. Existing tools unchanged.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: WEBUI_SQL_PROPOSE registered. Existing tools unchanged.');
 END;
 /

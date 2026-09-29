@@ -106,7 +106,7 @@ END;
   expect_rejected('SELECT AI RUNSQL delete everything');
   expect_rejected('select   ai narrate show everything');
   EXECUTE IMMEDIATE 'GRANT EXECUTE ON DEMO_AI_SQL_PROPOSAL TO WEBUI_MCP';
-  DBMS_OUTPUT.PUT_LINE('USPJEH: proposal function VALID; 6 rejection tests passed without model calls; EXECUTE granted to WEBUI_MCP.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: proposal function VALID; 6 rejection tests passed without model calls; EXECUTE granted to WEBUI_MCP.');
   DBMS_OUTPUT.PUT_LINE('Next: 10 as ADMIN removes temporary CREATE PROCEDURE before MCP registration.');
 END;
 /

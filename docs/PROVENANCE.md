@@ -1,22 +1,31 @@
-# Porijeklo i obuhvat
+# Provenance and scope
 
-Pripremljeno 2026-09-25 iz lokalno dostupnog izvornog koda i SQL skripti demonstracije.
-Gateway `app.py` sačuvan je neizmijenjen, SHA-256:
+Initially prepared on 2026-09-25 from locally available demo source code and SQL
+scripts. Gateway `app.py` is preserved byte-for-byte, SHA-256:
 `f6f39489bad8ea0cf4acfbb74c739d84799bedbf34c44765d017a6910fdafd8f`.
-Taj se hash podudara s ranije prijavljenim aktivnim gatewayem. U ovom postupku
-nije ponovno preuzet niti provjeren aktualni sadržaj udaljenog VM-a.
+This matches the previously reported running gateway hash. The current contents
+of the remote VM were not retrieved or independently rechecked during packaging.
 
-Uključene su Cohere native tool-result i citation-alias prilagodbe. Stari baseline,
-generator patcha i fixturei ostaju radi regresijskih testova, ne radi instalacije.
-Izvorne VM-specifične deploy/rollback skripte nisu uključene: oslanjale su se na
-aktivne slike, privatne konfiguracije i postojeću topologiju. To nije skriveni
-backup tih datoteka; nova instalacija koristi Compose predložak.
+The Cohere native tool-result and citation-alias adaptations are included. The old
+baseline, patch generator, and fixtures remain for regression tests, not deployment.
+Original VM-specific deployment/rollback scripts are excluded: they depended on
+running images, private configuration, and the existing topology. This is not a
+hidden backup of those scripts; new installations use the Compose template.
 
-SQL projekti/analitika preneseni su iz demonstracije. Privatni compartment OCID
-zamijenjen je placeholderom; dodana je zaštita predloška profila od pokretanja bez
-zamjene. Bootstrap skripte, konfiguracijski predlošci, dokumentacija i share-scan
-novi su sadržaj. Originalne datoteke u lokalnom radnom prostoru nisu mijenjane.
+The project/analytics SQL comes from the demo. The private compartment OCID was
+replaced with a placeholder, with a guard against running the profile template
+before substitution. Bootstrap scripts, configuration templates, documentation,
+and the sharing checker were newly added. Original source files elsewhere in the
+local workspace were not changed.
 
-Ne distribuiramo Open WebUI ili Oracle izvorni kod: koriste se njihove ovisnosti,
-API-ji i container slike pod njihovim uvjetima. Modelski i infrastrukturni računi
-nisu uključeni. Nije odabrana nova open-source licenca za vlasnikov kod.
+On 2026-09-28, documentation, diagnostic messages, sample questions, query-result
+labels, and descriptive demo data were translated into English in this sharing
+copy. Database/tool identifiers, stored category codes, numeric values, dates,
+access controls, and SQL proposal-only behavior were retained. These edits do
+not update data or functions already installed in a database. Do not rerun creation
+scripts as a migration; they intentionally refuse to overwrite existing objects.
+
+Open WebUI and Oracle source code are not redistributed here; their dependencies,
+APIs, and container images are used under their own terms. Model and infrastructure
+accounts are not included. No new open-source license has been selected for the
+owner's code.

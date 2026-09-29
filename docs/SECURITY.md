@@ -1,32 +1,34 @@
-# Granice dijeljenja i sigurnosti
+# Sharing scope and security limitations
 
-Uključeni su samo tekstualni izvori, generički predlošci i izmišljeni demo podaci.
-Nisu uključeni walleti, privatni ključevi, OAuth tokeni/client secrets, stvarne env
-datoteke, aktivni container inspect/Compose exporti, backup arhive, poslovni podaci,
-razgovori, originalni dokumenti ili korisničke lozinke.
+Only text source files, generic templates, and fictional demo data are included.
+Excluded: wallets, private keys, OAuth tokens/client secrets, real environment
+files, live container inspection/Compose exports, backup archives, business data,
+conversations, original documents, and user passwords.
 
-OCI OCID nije autentikacijska tajna, ali identifikatori izvornog okruženja uklonjeni
-su radi privatnosti. Javni model ID-evi, regije, generička imena demo shema i javni
-dokumentacijski URL-ovi namjerno ostaju. Sintetičke testne vrijednosti nisu ključevi.
+An OCI OCID is not an authentication secret, but original environment identifiers
+have been removed for privacy. Public model IDs, regions, generic demo schema
+names, and public documentation URLs are intentionally retained. Synthetic test
+values are not credentials.
 
-Prije svakog slanja pokrenite check_share, pregledajte staged diff i povijest.
-Heuristika ne može otkriti svaku tajnu; prije javne objave preporučuje se i odobreni
-namjenski secret scanner te provjera licenci i ovisnosti. Ovaj paket nije prošao
-nezavisan sigurnosni audit ni potpunu analizu CVE-a.
+Before every push, run `scripts/check_share.py` and inspect the staged diff and
+history. Heuristics cannot detect every secret. Before public release, also use
+an approved dedicated secret scanner and review licenses and dependencies. This
+package has not undergone an independent security audit or a complete CVE assessment.
 
-Ako se stvarna tajna jednom commita ili objavi: prvo je opozovite/rotirajte. Brisanje
-retka u novom commitu ne uklanja staru vrijednost iz povijesti ili tuđih kopija.
-GitHub privatni repozitorij nije spremište tajni. Ne koristite force push kao
-automatsko rješenje; prvo dogovorite čišćenje povijesti i koordinaciju suradnika.
+If a real secret is committed or published, revoke/rotate it first. Deleting a
+line in a later commit does not remove the old value from history or other copies.
+A private GitHub repository is not a secret store. Do not automatically force-push
+as a remedy; first agree on history cleanup and coordinate with collaborators.
 
-Čuvajte `.env` i wallet izvan Git-a, s ograničenim dozvolama i šifriranom sigurnosnom
-kopijom. Docker environment vrijednosti dostupne su administratoru hosta. Korisnik
-u docker grupi ima vrlo snažan pristup hostu i tajnama.
+Keep `.env` and wallets outside Git, with restricted permissions and an encrypted
+backup. Docker environment values are accessible to the host administrator.
+Membership in the Docker group gives substantial access to the host and its secrets.
 
-Nema public gateway/postgres porta. WebUI je loopback-only, autentikacija uključena.
-Za udaljenu uporabu trebaju HTTPS, kontrola registracije, pristupa i mreže, nadzor,
-budžeti i plan oporavka. Objavljivanje aplikacije nije dio ovog paketa.
+No gateway or PostgreSQL port is published. WebUI binds to loopback only, with
+authentication enabled. Remote use requires HTTPS, sign-up/access/network controls,
+monitoring, budgets, and a recovery plan. Public application deployment is outside
+the scope of this package.
 
-Code backup ne obuhvaća Oracle/Postgres sadržaj, Docker volumene, objekte u bucketu,
-IAM/VCN resurse ili spremljene WebUI postavke. Full-system backup je zaseban postupak
-i njegove arhive nikad ne pripadaju ovom repozitoriju.
+A code backup does not include Oracle/PostgreSQL contents, Docker volumes, bucket
+objects, IAM/VCN resources, or persisted WebUI settings. Full-system backup is a
+separate procedure, and its archives must never be placed in this repository.

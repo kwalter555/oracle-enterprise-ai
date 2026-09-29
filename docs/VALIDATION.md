@@ -1,34 +1,39 @@
-# Provjere očišćene verzije
+# Sanitized package validation
 
-Datum: 2026-09-25. Bez pristupa produkcijskoj bazi, OCI modelima ili promjena VM-a.
+Initial validation: 2026-09-25. English translation recheck: 2026-09-28.
+No production database access, OCI model calls, or VM changes.
 
-| Provjera | Rezultat |
+| Check | Result |
 |---|---|
-| Gateway offline regresije | 63 testa prošla; HTTP/signing mockovi, socket i DNS blokirani. |
-| Dijeljenje/tajne/env generator | 4 testa prošla, uključujući zabranu prepisivanja i dozvole 0600. |
-| SQL-proposal statičke provjere | 5 testova prošlo; nije Oracle kompilacija. |
-| Demo podaci | Offline SQLite referentne provjere prošle: FK, datumi, broj zapisa i agregati. |
-| Python | AST syntax provjera svih uključenih Python izvora prošla. |
-| Compose | YAML parse i strukturne provjere prošle: samo loopback WebUI port; nema objavljenog gateway/Postgres porta. |
-| JSON/profile predlošci | JSON parse, pet dopuštenih tablica i placeholder compartment provjereni. |
-| Gateway integritet | app.py identičan lokalnom provjerenom izvorniku i ranije prijavljenom VM hashu. |
-| Git ignore | Primjeri env, wallet, privatni ključ, backup i lokalni SQL ispravno zanemareni. |
-| Heuristički pregled sadržaja | Prošao nad git-visible datotekama; ne ispisuje pronađene vrijednosti. |
+| Gateway offline regressions | 63 tests passed; mocked HTTP/signing, socket and DNS blocked. |
+| Sharing/secrets/environment generator | 4 tests passed, including overwrite refusal and permissions 0600. |
+| SQL proposal static checks | 5 tests passed; not Oracle compilation. |
+| Demo data | Offline SQLite reference checks passed: foreign keys, dates, record counts, and aggregates. |
+| Python | AST syntax checks passed for included Python sources. |
+| Compose | YAML parsing and structural checks passed: loopback-only WebUI port; no published gateway/PostgreSQL ports. |
+| JSON/profile templates | JSON parsing, the five-table allowlist, and compartment placeholder checked. |
+| Gateway integrity | app.py matches the verified local source and previously reported VM hash. |
+| Git ignore | Sample environment, wallet, private-key, backup, and local SQL files correctly ignored. |
+| Heuristic content scan | Passed for Git-visible files; matched values are never printed. |
 
 Gateway test runtime: Python 3.12.14; LiteLLM 1.101.0, OCI 2.185.2,
-FastAPI 0.141.1, Uvicorn 0.53.0. Očekivane provider-greške u negativnim testovima
-namjerno se pojavljuju u ispisu. Pojavilo se upozorenje o budućoj zamjeni httpx
-u Starlette TestClientu; ne mijenjamo pinove bez zasebne provjere kompatibilnosti.
+FastAPI 0.141.1, Uvicorn 0.53.0. Expected provider errors appear deliberately in
+negative-test output. A warning about a future httpx replacement in Starlette's
+TestClient was observed; dependency pins are not changed without separate compatibility tests.
 
-## Nije potvrđeno ovim testiranjem
+The translation retains stored category codes and the database/tool interfaces.
+English natural-language prompts have not been retested against a live model.
+Existing deployments are not modified by these source changes.
 
-- Docker Compose CLI schema/build/start: Docker nije dostupan u okruženju pripreme.
-- Nova instalacija WebUI/Postgres/gatewaya i autentikacija prvog admina.
-- OCI IAM/regija/modeli i mreža primatelja; nema plaćenih inference testova.
-- Izvršavanje bootstrap i prilagođenih SQL predložaka u novoj Oracle bazi.
-- OAuth callback/MCP autorizacija nove instalacije.
-- Potpun dependency vulnerability/license audit i namjenski secret-scanner audit.
-- Aktualni udaljeni VM, backup podataka i test oporavka.
+## Not verified by this testing
 
-Ovaj zapis razlikuje lokalne dokaze od ranije korisnički potvrđene demonstracije.
-Ne smije se tumačiti kao potvrda da je paket već instaliran ili objavljen na GitHubu.
+- Docker Compose CLI schema/build/start: Docker is unavailable in the preparation environment.
+- Fresh WebUI/PostgreSQL/gateway installation and first-admin authentication.
+- The recipient's OCI IAM, regions, models, and networking; no billable inference tests.
+- Bootstrap and translated SQL execution/compilation in a new Oracle database.
+- OAuth callback/MCP authorization in a new installation.
+- A complete dependency vulnerability/license audit or dedicated secret-scanner audit.
+- Current remote VM contents, data backups, or recovery testing.
+
+This record distinguishes local evidence from the previously user-verified demo.
+It is not proof that the package has been installed or published to GitHub.
