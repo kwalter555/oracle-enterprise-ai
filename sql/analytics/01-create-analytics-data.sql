@@ -86,13 +86,13 @@ DECLARE
   l_education DATE;
   l_used_employees NUMBER;
 BEGIN
-  INSERT INTO demo_a_departments VALUES (1,'Razvoj');
-  INSERT INTO demo_a_departments VALUES (2,'Operacije');
-  INSERT INTO demo_a_departments VALUES (3,'Analitika');
-  INSERT INTO demo_a_departments VALUES (4,'Korisnicka podrska');
+  INSERT INTO demo_a_departments VALUES (1,'Development');
+  INSERT INTO demo_a_departments VALUES (2,'Operations');
+  INSERT INTO demo_a_departments VALUES (3,'Analytics');
+  INSERT INTO demo_a_departments VALUES (4,'Customer support');
   FOR e IN 1..24 LOOP
     INSERT INTO demo_a_employees VALUES
-      (e,'Demo zaposlenik ' || TO_CHAR(e,'FM00'),MOD(e-1,4)+1,
+      (e,'Demo employee ' || TO_CHAR(e,'FM00'),MOD(e-1,4)+1,
        ADD_MONTHS(DATE '2024-01-01',MOD(e-1,12))+7);
   END LOOP;
 
@@ -112,8 +112,8 @@ BEGIN
     IF MOD(p,7)=0 THEN l_budget := 8000; END IF;
     INSERT INTO demo_a_projects VALUES
       (p,'AN-'||TO_CHAR(l_year,'FM0000')||'-'||TO_CHAR(l_local,'FM00'),
-       'Demo analiticki projekt '||TO_CHAR(p,'FM00'),
-       'Demo kupac '||TO_CHAR(MOD(p-1,6)+1,'FM00'),
+       'Demo analytics project '||TO_CHAR(p,'FM00'),
+       'Demo customer '||TO_CHAR(MOD(p-1,6)+1,'FM00'),
        MOD(l_manager-1,4)+1,l_manager,l_start,l_end,l_actual,l_status,l_budget);
     FOR k IN 0..5 LOOP
       IF l_start+25*k <= c_as_of THEN
@@ -176,7 +176,7 @@ END;
   EXECUTE IMMEDIATE q'~COMMENT ON COLUMN demo_a_leave_days.day_fraction IS 'Recorded workday amount. Sum only GODISNJI plus ISKORISTEN for annual leave days. COUNT(DISTINCT employee_id) counts people who took leave. Filter year on leave_date.'~';
 
   COMMIT;
-  DBMS_OUTPUT.PUT_LINE('USPJEH: 5 analytics demo tables loaded. Original DEMO_PROJECTS and MCP tools unchanged.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: 5 analytics demo tables loaded. Original DEMO_PROJECTS and MCP tools unchanged.');
 EXCEPTION WHEN OTHERS THEN
   ROLLBACK;
   -- Oracle DDL is committed implicitly. A partial schema or committed rows may

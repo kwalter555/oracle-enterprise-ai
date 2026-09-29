@@ -22,7 +22,7 @@ def package_fingerprint():
 
 def candidate(source):
     if digest(source) != BASE_SHA256:
-        raise ValueError("Nepoznata verzija app.py. Ocekujem aktivni GPT-only native paket.")
+        raise ValueError("Unrecognized app.py version. Expected the active GPT-only native package.")
     text = source.decode()
     start = text.index('"""Inserted into app.py by prepare.py;')
     end = text.index('\ndef chat_call(body):', start)
@@ -34,5 +34,5 @@ def candidate(source):
 def packaged_app():
     expected = candidate((HERE / "baseline.py").read_bytes())
     if (HERE / "app.py").read_bytes() != expected:
-        raise ValueError("app.py nije jednak provjerenom all-model patchu.")
+        raise ValueError("app.py does not match the verified all-model patch.")
     return expected

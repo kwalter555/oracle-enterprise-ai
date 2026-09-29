@@ -25,11 +25,11 @@ for statement in ddl:
     db.execute(statement)
 
 as_of = date(2026, 9, 24)
-for i, name in enumerate(['Razvoj', 'Operacije', 'Analitika', 'Korisnicka podrska'], 1):
+for i, name in enumerate(['Development', 'Operations', 'Analytics', 'Customer support'], 1):
     db.execute('INSERT INTO demo_a_departments VALUES (?,?)', (i, name))
 for e in range(1, 25):
     db.execute('INSERT INTO demo_a_employees VALUES (?,?,?,?)',
-               (e, f'Demo zaposlenik {e:02}', (e-1) % 4+1,
+               (e, f'Demo employee {e:02}', (e-1) % 4+1,
                 date(2024, (e-1) % 12+1, 8).isoformat()))
 
 cost_id = 0
@@ -42,8 +42,8 @@ for p in range(1, 37):
     manager = (p-1) % 24+1
     budget = 8000 if p % 7 == 0 else 25000+500*p
     db.execute('INSERT INTO demo_a_projects VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-               (p, f'AN-{year}-{local:02}', f'Demo analiticki projekt {p:02}',
-                f'Demo kupac {(p-1)%6+1:02}', (manager-1) % 4+1, manager,
+               (p, f'AN-{year}-{local:02}', f'Demo analytics project {p:02}',
+                f'Demo customer {(p-1)%6+1:02}', (manager-1) % 4+1, manager,
                 start.isoformat(), end.isoformat(), actual, status, budget))
     for k in range(6):
         cost_date = start+timedelta(days=25*k)

@@ -46,53 +46,53 @@ BEGIN
   EXECUTE IMMEDIATE q'~
     INSERT ALL
       INTO demo_projects VALUES
-        ('ORION-742', 'AI asistent za podrsku', 'Demo Adria Retail', 'U_TIJEKU',
+        ('ORION-742', 'AI support assistant', 'Demo Adria Retail', 'U_TIJEKU',
          'Ana Demo', DATE '2026-05-04', DATE '2026-11-30', 85000, 52000, 65,
-         'Pretrazivanje interne dokumentacije i odgovori uz navod izvora.')
+         'Search internal documentation and provide answers with source citations.')
       INTO demo_projects VALUES
-        ('ATLAS-315', 'Migracija izvjestavanja', 'Demo Sjever Logistika', 'U_TIJEKU',
+        ('ATLAS-315', 'Reporting migration', 'Demo Sjever Logistics', 'U_TIJEKU',
          'Marko Demo', DATE '2026-03-02', DATE '2026-10-15', 120000, 98000, 80,
-         'Migracija dnevnih izvjestaja u autonomnu bazu.')
+         'Migrate daily reports to Autonomous Database.')
       INTO demo_projects VALUES
-        ('VEGA-208', 'Portal dobavljaca', 'Demo Jadran Industrija', 'PAUZIRAN',
+        ('VEGA-208', 'Supplier portal', 'Demo Jadran Industries', 'PAUZIRAN',
          'Iva Demo', DATE '2026-02-16', DATE '2026-09-15', 60000, 38000, 45,
-         'Projekt ceka odobrenje novog opsega integracije.')
+         'Project awaiting approval of the revised integration scope.')
       INTO demo_projects VALUES
-        ('LYRA-104', 'Digitalna arhiva', 'Demo Bor Usluge', 'ZAVRSEN',
+        ('LYRA-104', 'Digital archive', 'Demo Bor Services', 'ZAVRSEN',
          'Luka Demo', DATE '2026-01-12', DATE '2026-06-30', 45000, 42000, 100,
-         'Uvedena arhiva ugovora s pretragom metapodataka.')
+         'Contract archive with metadata search implemented.')
       INTO demo_projects VALUES
-        ('NOVA-550', 'Predvidjanje potraznje', 'Demo Adria Retail', 'PLANIRAN',
+        ('NOVA-550', 'Demand forecasting', 'Demo Adria Retail', 'PLANIRAN',
          'Ana Demo', DATE '2026-10-01', DATE '2027-03-31', 95000, 0, 0,
-         'Planirana analiza prodaje na izmisljenim testnim podacima.')
+         'Planned sales analysis using fictional test data.')
       INTO demo_projects VALUES
-        ('PULSAR-630', 'Nadzor infrastrukture', 'Demo Sjever Logistika', 'U_TIJEKU',
+        ('PULSAR-630', 'Infrastructure monitoring', 'Demo Sjever Logistics', 'U_TIJEKU',
          'Petar Demo', DATE '2026-04-01', DATE '2026-09-01', 75000, 81000, 90,
-         'Primjer projekta koji je presao budzet i planirani rok.')
+         'Example of a project exceeding its budget and planned deadline.')
       INTO demo_projects VALUES
-        ('AURORA-220', 'Automatizacija racuna', 'Demo Lipa Financije', 'U_TIJEKU',
+        ('AURORA-220', 'Invoice automation', 'Demo Lipa Finance', 'U_TIJEKU',
          'Iva Demo', DATE '2026-06-01', DATE '2026-12-15', 70000, 26000, 35,
-         'Testno izdvajanje podataka i provjera ulaznih racuna.')
+         'Test data extraction and validation of incoming invoices.')
       INTO demo_projects VALUES
-        ('ZENIT-410', 'Katalog podataka', 'Demo Jadran Industrija', 'PLANIRAN',
+        ('ZENIT-410', 'Data catalog', 'Demo Jadran Industries', 'PLANIRAN',
          'Marko Demo', DATE '2026-11-02', DATE '2027-02-28', 50000, 0, 0,
-         'Planiran popis izvora podataka i njihovih vlasnika.')
+         'Planned inventory of data sources and their owners.')
       INTO demo_projects VALUES
-        ('COMET-905', 'Mobilni servisni nalozi', 'Demo Bor Usluge', 'ZAVRSEN',
+        ('COMET-905', 'Mobile service orders', 'Demo Bor Services', 'ZAVRSEN',
          'Luka Demo', DATE '2026-02-02', DATE '2026-08-31', 55000, 57000, 100,
-         'Zavrsen projekt s manjim prekoracenjem budzeta.')
+         'Completed project with a small budget overrun.')
       INTO demo_projects VALUES
-        ('TITAN-180', 'Skladiste prodajnih podataka', 'Demo Lipa Financije', 'U_TIJEKU',
+        ('TITAN-180', 'Sales data warehouse', 'Demo Lipa Finance', 'U_TIJEKU',
          'Petar Demo', DATE '2026-07-01', DATE '2027-01-31', 150000, 49000, 30,
-         'Objedinjavanje demonstracijskih podataka za analitiku.')
+         'Consolidate demo data for analytics.')
       INTO demo_projects VALUES
-        ('IRIS-360', 'Portal za edukaciju', 'Demo Kvarner Edu', 'PAUZIRAN',
+        ('IRIS-360', 'Training portal', 'Demo Kvarner Edu', 'PAUZIRAN',
          'Ana Demo', DATE '2026-04-15', DATE '2026-12-01', 35000, 12000, 25,
-         'Ceka se priprema nastavnih materijala.')
+         'Awaiting preparation of training materials.')
       INTO demo_projects VALUES
-        ('POLARIS-810', 'Sigurnosni pregled sustava', 'Demo Kvarner Edu', 'ZAVRSEN',
+        ('POLARIS-810', 'System security review', 'Demo Kvarner Edu', 'ZAVRSEN',
          'Iva Demo', DATE '2026-07-06', DATE '2026-09-18', 30000, 28000, 100,
-         'Zavrsen pregled konfiguracije demonstracijskog sustava.')
+         'Completed configuration review of the demonstration system.')
     SELECT 1 FROM dual
   ~';
 
@@ -101,7 +101,7 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20004, 'Unexpected inserted row count.');
   END IF;
   COMMIT;
-  DBMS_OUTPUT.PUT_LINE('USPJEH: WEBUI_MCP.DEMO_PROJECTS created; 12 demo rows committed.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: WEBUI_MCP.DEMO_PROJECTS created; 12 demo rows committed.');
 EXCEPTION
   WHEN OTHERS THEN
     ROLLBACK;

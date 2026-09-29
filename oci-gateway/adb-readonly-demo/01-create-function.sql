@@ -22,11 +22,11 @@ BEGIN
 
     -- Fixed SELECT; caller cannot alter tables, columns, predicates or row limit.
     WITH DEMO_PROJECTS (PROJECT_CODE, PROJECT_NAME, PROJECT_STATUS, COMPLETION_PCT) AS (
-        SELECT 'ORION-742', 'Demo Oracle AI integracija', 'IN_PROGRESS', 65 FROM DUAL
+        SELECT 'ORION-742', 'Demo Oracle AI integration', 'IN_PROGRESS', 65 FROM DUAL
         UNION ALL
-        SELECT 'ATLAS-315', 'Demo analitika prodaje', 'PLANNED', 10 FROM DUAL
+        SELECT 'ATLAS-315', 'Demo sales analytics', 'PLANNED', 10 FROM DUAL
         UNION ALL
-        SELECT 'VEGA-208', 'Demo arhiva dokumenata', 'COMPLETED', 100 FROM DUAL
+        SELECT 'VEGA-208', 'Demo document archive', 'COMPLETED', 100 FROM DUAL
     )
     SELECT JSON_OBJECT(
                'status' VALUE 'OK',
@@ -48,7 +48,7 @@ END;
 /
 
 -- Must show VALID, and the errors query must return no rows.
-SELECT USER AS PRIJAVLJENI_KORISNIK FROM DUAL;
+SELECT USER AS CONNECTED_USER FROM DUAL;
 SELECT OBJECT_NAME, STATUS FROM USER_OBJECTS
 WHERE OBJECT_NAME = 'WEBUI_PROJECT_LOOKUP' AND OBJECT_TYPE = 'FUNCTION';
 SELECT LINE, POSITION, TEXT FROM USER_ERRORS

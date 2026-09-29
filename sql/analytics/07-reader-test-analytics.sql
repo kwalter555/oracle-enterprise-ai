@@ -19,7 +19,7 @@ DECLARE
     IF l_sql IS NULL OR DBMS_LOB.GETLENGTH(l_sql) = 0 THEN
       RAISE_APPLICATION_ERROR(-20240, 'Empty SHOWSQL response.');
     END IF;
-    DBMS_OUTPUT.PUT_LINE('GENERIRANI SQL - NIJE IZVRSEN:');
+    DBMS_OUTPUT.PUT_LINE('GENERATED SQL - NOT EXECUTED:');
     WHILE l_offset <= DBMS_LOB.GETLENGTH(l_sql) LOOP
       l_piece := DBMS_LOB.SUBSTR(l_sql, 4000, l_offset);
       DBMS_OUTPUT.PUT_LINE(l_piece);
@@ -31,28 +31,28 @@ BEGIN
      OR SYS_CONTEXT('USERENV','CURRENT_SCHEMA') <> 'DEMO_AI_READER' THEN
     RAISE_APPLICATION_ERROR(-20241, 'Run as DEMO_AI_READER.');
   END IF;
-  show_question('TEST 1: TROSKOVI PO GODINI',
-    'Koliki su stvarno evidentirani troskovi svih projekata po kalendarskoj godini nastanka troska? Prikazi godinu i ukupni trosak u EUR, sortirano po godini. Nemoj koristiti planirani budzet ili godinu pocetka projekta.');
-  show_question('TEST 2: GODISNJI ODMORI 2025',
-    'Koliko je razlicitih zaposlenika tijekom kalendarske 2025. godine stvarno iskoristilo godisnji odmor i koliko je ukupno dana godisnjeg odmora iskoristeno? Iskljuci samo odobrene ili otkazane dane i druge vrste odsutnosti.');
+  show_question('TEST 1: COSTS BY YEAR',
+    'What are the actual recorded costs of all projects by the calendar year when each cost occurred? Show the year and total cost in EUR, sorted by year. Do not use planned budgets or the project start year.');
+  show_question('TEST 2: ANNUAL LEAVE IN 2025',
+    'How many distinct employees actually took annual leave in calendar year 2025, and how many annual leave days were taken in total? Exclude days that were only approved or cancelled, and exclude other types of absence.');
 END;
 /
 
 -- These reference results do NOT prove the model-generated SQL is correct.
 -- Expected: 2025 = 185523; 2026 = 288176 (snapshot through 2026-09-24).
-SELECT EXTRACT(YEAR FROM cost_date) AS godina,
-       SUM(amount_eur) AS trosak_eur
+SELECT EXTRACT(YEAR FROM cost_date) AS calendar_year,
+       SUM(amount_eur) AS cost_eur
 FROM WEBUI_MCP.DEMO_A_COSTS
 GROUP BY EXTRACT(YEAR FROM cost_date)
-ORDER BY godina;
+ORDER BY calendar_year;
 
 -- Expected: 473699 EUR, all recorded costs across both years.
-SELECT SUM(amount_eur) AS ukupni_trosak_eur
+SELECT SUM(amount_eur) AS total_cost_eur
 FROM WEBUI_MCP.DEMO_A_COSTS;
 
 -- Expected: 20 employees, 100 days.
-SELECT COUNT(DISTINCT employee_id) AS broj_zaposlenika,
-       SUM(day_fraction) AS iskoristeni_dani
+SELECT COUNT(DISTINCT employee_id) AS employee_count,
+       SUM(day_fraction) AS days_taken
 FROM WEBUI_MCP.DEMO_A_LEAVE_DAYS
 WHERE leave_type = 'GODISNJI'
   AND leave_status = 'ISKORISTEN'

@@ -63,7 +63,7 @@ BEGIN
   IF l_remaining IS NULL OR l_remaining <> -6000 THEN
     RAISE_APPLICATION_ERROR(-20025, 'Overspend assertion failed.');
   END IF;
-  DBMS_OUTPUT.PUT_LINE('TESTOVI: OK (12 projects, invalid input, missing project, budgets, normalization).');
+  DBMS_OUTPUT.PUT_LINE('TESTS: OK (12 projects, invalid input, missing project, budgets, normalization).');
 
   DBMS_CLOUD_AI_AGENT.CREATE_TOOL(
     tool_name => 'WEBUI_PROJECT_LOOKUP',
@@ -74,6 +74,6 @@ BEGIN
     }~',
     description => 'Read-only lookup of one synthetic demo project from DEMO_PROJECTS.'
   );
-  DBMS_OUTPUT.PUT_LINE('USPJEH: WEBUI_PROJECT_LOOKUP tool registered.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: WEBUI_PROJECT_LOOKUP tool registered.');
 END;
 /

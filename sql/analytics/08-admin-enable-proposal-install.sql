@@ -19,6 +19,6 @@ BEGIN
   WHERE owner='DEMO_AI_READER' AND object_name='DEMO_AI_SQL_PROPOSAL';
   IF n <> 0 THEN RAISE_APPLICATION_ERROR(-20304,'Proposal object already exists. Nothing replaced.'); END IF;
   EXECUTE IMMEDIATE 'GRANT CREATE PROCEDURE TO DEMO_AI_READER';
-  DBMS_OUTPUT.PUT_LINE('USPJEH: temporary CREATE PROCEDURE granted. Run 09 as reader, then 10 as ADMIN.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: temporary CREATE PROCEDURE granted. Run 09 as reader, then 10 as ADMIN.');
 END;
 /

@@ -69,7 +69,7 @@ END;
   IF l_count <> 1 THEN
     RAISE_APPLICATION_ERROR(-20013, 'Function is not VALID. Inspect USER_ERRORS; do not register the tool.');
   END IF;
-  DBMS_OUTPUT.PUT_LINE('USPJEH: WEBUI_PROJECT_LOOKUP created and VALID. No table data changed.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: WEBUI_PROJECT_LOOKUP created and VALID. No table data changed.');
 END;
 /
 

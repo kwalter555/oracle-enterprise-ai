@@ -50,7 +50,7 @@ BEGIN
     }~',
     description => 'Fictional analytics snapshot 2026-09-24; only five DEMO_A tables; not the original DEMO_PROJECTS.'
   );
-  DBMS_OUTPUT.PUT_LINE('USPJEH: DEMO_ANALYTICS_OCI profile created. Model access not tested yet.');
+  DBMS_OUTPUT.PUT_LINE('SUCCESS: DEMO_ANALYTICS_OCI profile created. Model access not tested yet.');
 END;
 /
 
