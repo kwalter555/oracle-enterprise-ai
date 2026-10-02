@@ -16,16 +16,61 @@ an existing installation.
 - `compose.example.yaml`, `.env.example`: Open WebUI + PostgreSQL + the gateway.
 - `sql/projects/`: 12 fictional projects and a restricted lookup by project code.
 - `sql/analytics/`: five demo tables, Select AI, and an MCP **SQL proposal tool with no execution**.
+- `approved-sql/`: optional, separate administrator pilot for **exact-SQL review
+  and one-use approval before read-only execution**; disabled by default, manual installation.
 - `sql/bootstrap/`: initial setup steps for your own Autonomous Database.
 - `config/`: IAM and MCP templates without original environment identifiers.
 - `scripts/`: local secret generation, configuration validation, and sharing checks.
 - `docs/`: setup, database/MCP instructions, security, provenance, and validation results.
+- `infra/resource-manager/`: Terraform Stack and English Console form for a new
+  OCI demo environment; application startup and SQL/OAuth setup stay manual.
 
 Documentation, prompts, messages, and descriptive sample data are in English.
 Existing database/tool identifiers and stored category codes are retained for
 compatibility; see the [data code glossary](docs/DATABASE-MCP.md#data-code-glossary).
 
-## Quick start — on a new OCI Compute instance only
+## Architecture
+
+![Oracle Enterprise AI architecture](docs/architecture/enterprise-ai-atp.png)
+
+[Editable draw.io diagram](docs/architecture/enterprise-ai-atp.drawio) ·
+[Architecture notes and scope](docs/architecture/README.md)
+
+The diagram uses official Oracle OCI stencils. Blue paths show the manually
+configured application and MCP flows; orange dashed paths show the optional
+SQL-review pilot, which Terraform does **not** install or enable.
+
+## Provision a new environment with OCI Resource Manager
+
+[![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https%3A%2F%2Fgithub.com%2Fkwalter555%2Foracle-enterprise-ai%2Farchive%2Frefs%2Fheads%2Fmain.zip)
+
+**Before continuing: turn off “Run apply”, select working directory
+`infra/resource-manager`, and run Plan first.** The button opens the OCI Console;
+it is not permission to deploy paid resources. Sign in to your own tenancy and
+choose your intended region and compartment. The database ADMIN password enters
+protected Terraform state when deployed; restrict access to that state.
+
+The button downloads the **complete public `main` branch**, not this preview
+branch. It is ready only after this change is merged into `main`. For a reviewed,
+fixed version, upload a ZIP built from that exact commit instead of mutable `main`.
+See the [button and ZIP instructions](infra/resource-manager/README.md#deploy-button-public-github-repository).
+
+Use the [Stack guide](infra/resource-manager/README.md) to create fresh network,
+Compute, Autonomous Database and optional IAM resources in your own compartment.
+Upload the complete distribution ZIP and select working directory
+`infra/resource-manager`. **Review Plan before Apply: these are paid resources.**
+No existing environment is imported or modified. This prepares infrastructure,
+not a one-click restoration of the original system.
+
+The **2026-10-02 ATP package** corrects the earlier Stack's DW/20 GB mismatch:
+new databases now use Transaction Processing (`OLTP`), 2 ECPUs and 20 GB by
+default. Use a new Stack, not an in-place update to an existing database. No
+automatic shutdown schedule or spending cap is installed; see the Stack guide.
+
+## Alternative quick start — on your own new OCI Compute instance
+
+For adding approved execution to an **existing** installation, use the separate
+[approved SQL runbook](approved-sql/README.md), not this fresh-install procedure.
 
 Prerequisites: your own OCI tenancy, a supported GenAI region and quotas, a Linux
 VM, Docker Engine with Compose v2, Python 3, and administrative access to a new

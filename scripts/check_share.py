@@ -4,11 +4,18 @@ Not a replacement for gitleaks/trufflehog, history review or human review.
 Ignored local files are excluded; explicitly tracked secrets still fail.
 """
 from pathlib import Path
+import hashlib
 import re
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+# Exact reviewed diagram only. Re-exporting requires another visual/privacy review.
+# Do not replace this with a general image-extension exemption.
+REVIEWED_IMAGES = {
+    'docs/architecture/enterprise-ai-atp.png':
+        '796bfbb109c83fe699ca6d82f57a29fb19cf9e3a61917cad2018489ae3ceb41e',
+}
 RULES = {
     'private-key': re.compile(r'-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'),
     'github-token': re.compile(r'\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,})\b'),
@@ -17,6 +24,7 @@ RULES = {
     'real-oci-identifier': re.compile(r'\bocid1\.[a-z0-9]+\.[a-z0-9-]*\.[a-z0-9._-]{20,}', re.I),
     'personal-home-path': re.compile('/' + r'Users/[^/\s<>]+/'),
     'credential-assignment': re.compile(r'(?im)^\s*(?:OCI_GATEWAY_KEY|WEBUI_SECRET_KEY|POSTGRES_PASSWORD)\s*=\s*["\']?[0-9a-f]{32,}'),
+    'approval-service-key': re.compile(r'"(?:api_key|approval_key)"\s*:\s*"[0-9a-f]{64}"'),
     'public-ip': re.compile(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'),
     'email': re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'),
 }
@@ -32,6 +40,9 @@ def content_issues(text):
                     continue
                 if parts[0] == 127 or match[0] == '0.0.0.0':
                     continue
+                # One documented private VCN example, not arbitrary private IPs.
+                if parts == [10, 42, 0, 0] and text[match.end():match.end()+3] == '/16':
+                    continue
                 if parts[:3] in ([192,0,2], [198,51,100], [203,0,113]):
                     continue
             if label == 'email' and match[0].split('@')[1].endswith(('.invalid','.example')):
@@ -46,10 +57,11 @@ def path_issues(name):
     if p.name == '.env.example':
         return set()
     if (p.name.startswith('.env') or p.suffix.lower() in
-        {'.key','.pem','.p12','.pfx','.sso','.jks','.dump','.db','.zip','.gz','.tgz','.7z','.log'}
+        {'.key','.pem','.p12','.pfx','.sso','.jks','.dump','.db','.sqlite','.zip','.gz','.tgz','.7z','.log'}
         or 'wallet' in low or any('backup' in part.lower() for part in p.parts)
+        or '.tfstate' in p.name or p.name.endswith(('.tfplan','.tfvars','.tfvars.json'))
         or p.name in {'tnsnames.ora','sqlnet.ora','roles.sql'}
-        or any(part in {'.oci','.ssh','local','uploads','data','__pycache__'} for part in p.parts)):
+        or any(part in {'.oci','.ssh','.terraform','local','private','uploads','data','__pycache__'} for part in p.parts)):
         return {'forbidden-file'}
     return set()
 
@@ -79,7 +91,12 @@ def scan(root=ROOT):
                 issues.add('oversized-file')
             else:
                 try:
-                    issues |= content_issues(path.read_text(encoding='utf-8'))
+                    raw = path.read_bytes()
+                    if name in REVIEWED_IMAGES:
+                        if hashlib.sha256(raw).hexdigest() != REVIEWED_IMAGES[name]:
+                            issues.add('unreviewed-image')
+                    else:
+                        issues |= content_issues(raw.decode('utf-8'))
                 except UnicodeError:
                     issues.add('binary-file')
         else:
