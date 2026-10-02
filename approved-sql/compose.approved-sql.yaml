@@ -1,0 +1,43 @@
+name: oci-approved-sql-demo
+services:
+  sql-review:
+    build: .
+    image: oci-approved-sql-demo:0.1.0
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m,mode=1777
+    volumes:
+      - type: bind
+        source: ./private/sql-review.json
+        target: /run/secrets/sql-review.json
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./private/client-config
+        target: /run/wallet
+        read_only: true
+        bind:
+          create_host_path: false
+      - review-state:/state
+    networks:
+      existing-webui:
+        aliases: [sql-review]
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: '2'
+    # No ports: this service must never be published on the host or Internet.
+volumes:
+  review-state:
+networks:
+  existing-webui:
+    external: true
+    name: ${WEBUI_DOCKER_NETWORK:?Set the existing Open WebUI Docker network}

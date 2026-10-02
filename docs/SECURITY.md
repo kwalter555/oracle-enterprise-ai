@@ -32,3 +32,21 @@ the scope of this package.
 A code backup does not include Oracle/PostgreSQL contents, Docker volumes, bucket
 objects, IAM/VCN resources, or persisted WebUI settings. Full-system backup is a
 separate procedure, and its archives must never be placed in this repository.
+
+The Resource Manager option adds a separate state boundary: the new database ADMIN
+password is a sensitive input, but it is still stored in Terraform state. Restrict
+access to Stack jobs, state and exports. The UI's hidden View State button is not
+an access-control guarantee. Real variable files, state and saved plans are excluded
+from this source package. The Stack generates application secrets only on the VM;
+it does not automatically start the application, install SQL or enable MCP.
+Review the [Stack security and recovery limits](../infra/resource-manager/README.md#security-updates-and-recovery-boundaries)
+before provisioning. Destroy protection and a retained boot volume are not backups.
+
+The optional `approved-sql/` pilot adds a separate trust boundary: an administrator-only
+WebUI Tool holds transport/signing keys, and a private sidecar holds two database
+passwords, mTLS material and a one-use approval ledger. These runtime files and
+configured Tool exports are not shareable source. Every analytical query needs
+an interactive approval of the exact stored SQL. Database SELECT-only privileges,
+read-only transactions and a restricted SQL AST policy are independent safeguards,
+not a production security certification. Host/plugin administrators remain trusted.
+Read the [pilot boundaries and staged activation](../approved-sql/README.md) before use.

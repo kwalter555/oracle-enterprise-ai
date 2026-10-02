@@ -1,0 +1,8 @@
+**
+!Dockerfile
+!requirements.txt
+!policy.py
+!ledger.py
+!database.py
+!service.py
+!check.py

@@ -1,0 +1,10 @@
+{
+  "execution_enabled": false,
+  "allowed_user_ids": ["REPLACE_WITH_YOUR_WEBUI_USER_ID"],
+  "dsn": "yourdatabase_low",
+  "api_key": "GENERATED_LOCALLY_BY_CONFIGURE",
+  "approval_key": "ANOTHER_KEY_GENERATED_LOCALLY_BY_CONFIGURE",
+  "proposal_password": "YOUR_DEMO_AI_READER_DATABASE_PASSWORD",
+  "executor_password": "YOUR_DEMO_SQL_EXECUTOR_DATABASE_PASSWORD",
+  "wallet_password": "YOUR_WALLET_DOWNLOAD_PASSWORD"
+}

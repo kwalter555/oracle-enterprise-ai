@@ -54,3 +54,16 @@ node_modules/
 .DS_Store
 .idea/
 .vscode/
+# Terraform local state, plans and real variable values. Lock files are reviewed source.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
